@@ -8,9 +8,11 @@ interface InternshipCardProps {
   internship: Internship;
   recommendation?: Recommendation;
   language: 'en' | 'hi';
+  onApply?: () => void;
+  onViewDetails?: () => void;
 }
 
-export const InternshipCard = ({ internship, recommendation, language }: InternshipCardProps) => {
+export const InternshipCard = ({ internship, recommendation, language, onApply, onViewDetails }: InternshipCardProps) => {
   const t = language === 'en' ? {
     whyRecommended: 'Why Recommended',
     apply: 'Apply Now',
@@ -105,10 +107,10 @@ export const InternshipCard = ({ internship, recommendation, language }: Interns
         )}
 
         <div className="flex space-x-2 pt-2">
-          <Button className="flex-1" size="sm">
+          <Button className="flex-1" size="sm" onClick={onApply}>
             {t.apply}
           </Button>
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" onClick={onViewDetails}>
             {t.viewDetails}
           </Button>
         </div>

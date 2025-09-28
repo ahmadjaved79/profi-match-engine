@@ -7,9 +7,12 @@ import { Footer } from '@/components/Layout/Footer';
 import { StudentRegistration } from '@/components/StudentRegistration';
 import { InternshipCard } from '@/components/InternshipCard';
 import { AdminDashboard } from '@/components/AdminDashboard';
+import { ApplyPage } from './ApplyPage';
+import { InternshipDetails } from './InternshipDetails';
+import { StudentProfile } from './StudentProfile';
 import { RecommendationEngine } from '@/utils/recommendation';
 import { mockInternships, translations } from '@/data/mockData';
-import { Student, Recommendation, Notification } from '@/types';
+import { Student, Recommendation, Notification, Internship } from '@/types';
 import { useToast } from '@/hooks/use-toast';
 import { Brain, Target, Users, TrendingUp, Rocket, Zap } from 'lucide-react';
 import heroImage from '@/assets/hero-internship.jpg';
@@ -20,7 +23,8 @@ const Index = () => {
   const [currentStudent, setCurrentStudent] = useState<Student | null>(null);
   const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
   const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [currentView, setCurrentView] = useState<'home' | 'register' | 'recommendations' | 'admin'>('home');
+  const [currentView, setCurrentView] = useState<'home' | 'register' | 'recommendations' | 'admin' | 'apply' | 'details' | 'profile'>('home');
+  const [selectedInternship, setSelectedInternship] = useState<Internship | null>(null);
 
   const t = translations[language];
 
@@ -49,9 +53,12 @@ const Index = () => {
     setNotifications(prev => prev.filter(n => n.id !== id));
   };
 
-  const handleNavigation = (view: string) => {
-    if (view === 'home' || view === 'recommendations' || view === 'register' || view === 'admin') {
+  const handleNavigation = (view: string, internship?: Internship) => {
+    if (view === 'home' || view === 'recommendations' || view === 'register' || view === 'admin' || view === 'apply' || view === 'details' || view === 'profile') {
       setCurrentView(view);
+      if (internship) {
+        setSelectedInternship(internship);
+      }
     }
   };
 
@@ -76,6 +83,13 @@ const Index = () => {
         ? `Found ${recs.length} matching internships for you!`
         : `आपके लिए ${recs.length} मैचिंग इंटर्नशिप मिलीं!`
     });
+  };
+
+  const handleUpdateStudent = (updatedStudent: Student) => {
+    setCurrentStudent(updatedStudent);
+    // Regenerate recommendations with updated profile
+    const recs = RecommendationEngine.generateRecommendations(updatedStudent, mockInternships);
+    setRecommendations(recs);
   };
 
   const StatCard = ({ icon: Icon, title, value, description }: { 
@@ -266,6 +280,8 @@ const Index = () => {
                 internship={rec.internship}
                 recommendation={rec}
                 language={language}
+                onApply={() => handleNavigation('apply', rec.internship)}
+                onViewDetails={() => handleNavigation('details', rec.internship)}
               />
             ))}
           </div>
@@ -305,6 +321,7 @@ const Index = () => {
         onNotificationDismiss={handleNotificationDismiss}
         onNavigate={handleNavigation}
         currentView={currentView}
+        currentStudent={currentStudent}
       />
       
       {currentView === 'home' && renderHome()}
@@ -317,6 +334,29 @@ const Index = () => {
       )}
       {currentView === 'recommendations' && renderRecommendations()}
       {currentView === 'admin' && <AdminDashboard language={language} />}
+      {currentView === 'apply' && (
+        <ApplyPage 
+          internship={selectedInternship} 
+          language={language} 
+          onBack={() => setCurrentView('recommendations')} 
+        />
+      )}
+      {currentView === 'details' && (
+        <InternshipDetails 
+          internship={selectedInternship} 
+          language={language} 
+          onBack={() => setCurrentView('recommendations')} 
+          onApply={() => handleNavigation('apply', selectedInternship)}
+        />
+      )}
+      {currentView === 'profile' && (
+        <StudentProfile 
+          student={currentStudent} 
+          language={language} 
+          onBack={() => setCurrentView('home')} 
+          onUpdateStudent={handleUpdateStudent}
+        />
+      )}
       
       <Footer language={language} />
     </div>

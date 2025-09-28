@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Bell, Globe, User, Menu, X, BarChart3 } from 'lucide-react';
 import { translations } from '@/data/mockData';
 import { NotificationPanel } from '@/components/NotificationPanel';
-import { Notification } from '@/types';
+import { Notification, Student } from '@/types';
 
 interface HeaderProps {
   language: 'en' | 'hi';
@@ -14,6 +14,7 @@ interface HeaderProps {
   onNotificationDismiss?: (id: string) => void;
   onNavigate?: (view: string) => void;
   currentView?: string;
+  currentStudent?: Student | null;
 }
 
 export const Header = ({ 
@@ -23,7 +24,8 @@ export const Header = ({
   onNotificationRead = () => {},
   onNotificationDismiss = () => {},
   onNavigate = () => {},
-  currentView = 'home'
+  currentView = 'home',
+  currentStudent = null
 }: HeaderProps) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const t = translations[language];
@@ -99,9 +101,21 @@ export const Header = ({
           />
 
           {/* User Menu */}
-          <Button variant="ghost" size="sm">
-            <User className="h-4 w-4" />
-          </Button>
+          {currentStudent ? (
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={() => onNavigate('profile')}
+              className="flex items-center space-x-2"
+            >
+              <User className="h-4 w-4" />
+              <span className="hidden sm:inline">{currentStudent.name.split(' ')[0]}</span>
+            </Button>
+          ) : (
+            <Button variant="ghost" size="sm">
+              <User className="h-4 w-4" />
+            </Button>
+          )}
 
           {/* Mobile Menu Toggle */}
           <Button
@@ -156,6 +170,16 @@ export const Header = ({
               <Globe className="h-4 w-4 mr-2" />
               {language === 'en' ? 'हिंदी' : 'English'}
             </Button>
+            {currentStudent && (
+              <Button 
+                variant={currentView === 'profile' ? 'default' : 'ghost'} 
+                className="w-full justify-start"
+                onClick={() => onNavigate('profile')}
+              >
+                <User className="h-4 w-4 mr-2" />
+                Profile - {currentStudent.name}
+              </Button>
+            )}
           </nav>
         </div>
       )}
