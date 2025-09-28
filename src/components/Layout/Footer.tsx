@@ -35,9 +35,9 @@ export const Footer = ({ language }: FooterProps) => {
                 <p className="text-xs text-muted-foreground">Smart Internship Platform</p>
               </div>
             </div>
-            <p className="text-sm text-muted-foreground">
+            {/* <p className="text-sm text-muted-foreground">
               {t.madeWith} <Heart className="inline-block h-4 w-4 text-red-500 mx-1" /> {t.forStudents}
-            </p>
+            </p> */}
           </div>
 
           {/* Features */}
@@ -69,7 +69,7 @@ export const Footer = ({ language }: FooterProps) => {
         <div className="mt-8 pt-8 border-t text-center">
           <div className="flex items-center justify-center space-x-2 text-sm text-muted-foreground">
             <Brain className="h-4 w-4" />
-            <span>© 2024 InternMatch AI. Connecting talent with opportunity.</span>
+            <span>© 2025 InternMatch AI. Connecting talent with opportunity.</span>
           </div>
         </div>
       </div>
